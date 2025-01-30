@@ -43,8 +43,8 @@ This repository is the **prototype implementation** of the EQDI vision. Join us 
 ### Installation
 
 ```bash
-git clone https://github.com/eqdi-prototype/eqdi-core
-cd eqdi-core
+git clone https://github.com/DevCon3/EQDI-Core
+cd EQDI-Core
 pip install -r requirements.txt
 ```
 
