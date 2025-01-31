@@ -102,9 +102,9 @@ The EQDI system progresses through four cognitive stages inspired by Jean Piaget
 
 | Stage           | Target Date | Key Dependency          |
 |-----------------|-------------|-------------------------|
-| Sensorimotor    | 2024 Q3     | Quantum annealing chips |
-| Pre-Operational | 2025 Q1     | Symbol grounding API    |
-| Concrete        | 2025 Q4     | Causal reasoning engine |
-| Formal          | 2026 Q2     | Ethical oversight DAO   |
+| Sensorimotor    | 2025 Q3     | Quantum annealing chips |
+| Pre-Operational | 2026 Q1     | Symbol grounding API    |
+| Concrete        | 2026 Q4     | Causal reasoning engine |
+| Formal          | 2027 Q2     | Ethical oversight DAO   |
 
 [Return to Main Documentation](../README.md)
