@@ -107,7 +107,7 @@
 
 ## Roadmap
 
-| Milestone                  | 2024                  | 2025                  |
+| Milestone                  | 2025                  | 2026                  |
 |----------------------------|-----------------------|-----------------------|
 | Harvesting Efficiency      | 15mW/cm² (solar)      | 25mW/cm² hybrid       |
 | Power Management           | Rule-based            | RL-optimized          |
