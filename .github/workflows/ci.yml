@@ -1,1 +1,144 @@
+name: EQDI CI/CD
 
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  CARGO_TERM_COLOR: always
+  PYTHON_VERSION: '3.11'
+
+jobs:
+  lint-and-test:
+    name: Lint & Test
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        components: ['quantum', 'energy', 'developmental']
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python ${{ env.PYTHON_VERSION }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+
+    - name: Install Python dependencies
+      run: |
+        pip install -r requirements.txt
+        pip install black flake8 pytest
+
+    - name: Set up Rust
+      uses: actions-rs/toolchain@v1
+      with:
+        profile: minimal
+        components: rustfmt, clippy
+
+    - name: Cache dependencies
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/.cargo/registry
+          ~/.cargo/git
+          target
+        key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+        
+    - name: Lint Python (Black)
+      run: black --check src/
+
+    - name: Lint Python (Flake8)
+      run: flake8 src/
+
+    - name: Lint Rust (Clippy)
+      uses: actions-rs/clippy@v1
+      with:
+        args: --all-targets -- -D warnings
+
+    - name: Format Rust (rustfmt)
+      uses: actions-rs/cargo@v1
+      with:
+        command: fmt
+        args: --all -- --check
+
+    - name: Run Python tests
+      run: pytest tests/python --cov=src --cov-report=xml
+
+    - name: Run Rust tests
+      uses: actions-rs/cargo@v1
+      with:
+        command: test
+        args: --all-targets
+
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    needs: lint-and-test
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: CodeQL Analysis
+      uses: github/codeql-action/analyze@v2
+      with:
+        languages: python, rust
+
+    - name: Dependency Review
+      uses: actions/dependency-review-action@v3
+
+  energy-profiling:
+    name: Energy Profiling
+    runs-on: [self-hosted, linux, x64]
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Energy-Aware Testing
+      run: |
+        ./scripts/energy_profiler.sh \
+          --max-power 500mW \
+          --components "quantum developmental"
+      
+    - name: Upload Power Report
+      uses: actions/upload-artifact@v3
+      with:
+        name: power-profile
+        path: ./reports/power_analysis.md
+
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    needs: [lint-and-test, security-scan]
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: DAO Approval
+      uses: actions/github-script@v6
+      with:
+        script: |
+          // Custom DAO governance check
+          await require('./scripts/dao-approval.js')()
+        
+    - name: Publish Documentation
+      run: |
+        mkdocs gh-deploy --force
+
+    - name: Notify Core Team
+      uses: actions/github-script@v6
+      with:
+        script: |
+          await github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: '🚀 Deployment approved and completed!'
+          })
