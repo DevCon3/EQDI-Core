@@ -60,7 +60,7 @@ Eco-Quantum Developmental Intelligence (EQDI) is a decentralized AI framework th
 3. **Anti-Exploitation Measures**
 
 ## Roadmap
-| Component         | 2024 Q3             | 2024 Q4               | 2025 Q2           |
+| Component         | 2025 Q3             | 2025 Q4               | 2026 Q2           |
 |-------------------|---------------------|-----------------------|-------------------|
 | Quantum Core      | Basic entanglement  | Error-corrected ops   | Topology optimizer|
 | Developmental     | Stage 1-2           | Stage 3               | Full progression  |
